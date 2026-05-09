@@ -47,35 +47,47 @@
 </div>
 
 <!-- GALLERY MODAL -->
+
 <div id="gallery-modal" class="gallery-modal">
   <div class="gallery-content">
     <span class="close-gallery" onclick="closeGallery()">&times;</span>
     <div class="gallery-grid">
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openFullScreenImage(0)">
         <img src="Image/20230310_065318.jpg?w=300&h=300&fit=crop" alt="Beautiful flowers">
         <div class="gallery-caption">Mom</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openFullScreenImage(1)">
         <img src="Image/20231022_120743.jpg?w=300&h=300&fit=crop" alt="Rose garden">
         <div class="gallery-caption">Mom</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openFullScreenImage(2)">
         <img src="Image/20240902_103624.jpg?w=300&h=300&fit=crop" alt="Tulip field">
         <div class="gallery-caption">Mom</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openFullScreenImage(3)">
         <img src="Image/20250831_144827.jpg?w=300&h=300&fit=crop" alt="Sunflower field">
         <div class="gallery-caption">Mom</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openFullScreenImage(4)">
         <img src="Image/394955916_1963678417349361_986713739647959131_n.jpg?w=300&h=300&fit=crop" alt="Lily pond">
         <div class="gallery-caption">Mom</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openFullScreenImage(5)">
         <img src="Image/474970674_1020593809878380_7697348059386966917_n.jpg?w=300&h=300&fit=crop" alt="Mother's love">
         <div class="gallery-caption">Mom</div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- FULL SCREEN IMAGE VIEW -->
+<div id="fullscreen-image-modal" class="fullscreen-image-modal">
+  <span class="fullscreen-close" onclick="closeFullScreenImage()">&times;</span>
+  <button class="nav-button prev-button" onclick="previousImage()">&#10094;</button>
+  <img id="fullscreen-image" src="" alt="Full screen view">
+  <button class="nav-button next-button" onclick="nextImage()">&#10095;</button>
+  <div class="image-counter">
+    <span id="current-image-index">1</span> / <span id="total-images">6</span>
   </div>
 </div>
 
@@ -300,6 +312,16 @@
 <div class="ground"></div>
 
 <script>
+let currentImageIndex = 0;
+const imageUrls = [
+  "Image/20230310_065318.jpg",
+  "Image/20231022_120743.jpg",
+  "Image/20240902_103624.jpg",
+  "Image/20250831_144827.jpg",
+  "Image/394955916_1963678417349361_986713739647959131_n.jpg",
+  "Image/474970674_1020593809878380_7697348059386966917_n.jpg"
+];
+
 function openGallery() {
   document.getElementById('gallery-modal').style.display = 'block';
   document.body.style.overflow = 'hidden';
@@ -310,6 +332,50 @@ function closeGallery() {
   document.body.style.overflow = 'auto';
 }
 
+function openFullScreenImage(index) {
+  currentImageIndex = index;
+  const modal = document.getElementById('fullscreen-image-modal');
+  const img = document.getElementById('fullscreen-image');
+  img.src = imageUrls[index];
+  document.getElementById('current-image-index').textContent = index + 1;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFullScreenImage() {
+  const modal = document.getElementById('fullscreen-image-modal');
+  modal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+function nextImage() {
+  currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+  const img = document.getElementById('fullscreen-image');
+  img.src = imageUrls[currentImageIndex];
+  document.getElementById('current-image-index').textContent = currentImageIndex + 1;
+}
+
+function previousImage() {
+  currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+  const img = document.getElementById('fullscreen-image');
+  img.src = imageUrls[currentImageIndex];
+  document.getElementById('current-image-index').textContent = currentImageIndex + 1;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(event) {
+  const modal = document.getElementById('fullscreen-image-modal');
+  if (modal.classList.contains('active')) {
+    if (event.key === 'ArrowRight') {
+      nextImage();
+    } else if (event.key === 'ArrowLeft') {
+      previousImage();
+    } else if (event.key === 'Escape') {
+      closeFullScreenImage();
+    }
+  }
+});
+
 // Close gallery when clicking outside the content
 document.getElementById('gallery-modal').addEventListener('click', function(event) {
   if (event.target === this) {
@@ -317,10 +383,19 @@ document.getElementById('gallery-modal').addEventListener('click', function(even
   }
 });
 
+// Close full screen when clicking outside
+document.getElementById('fullscreen-image-modal').addEventListener('click', function(event) {
+  if (event.target === this) {
+    closeFullScreenImage();
+  }
+});
+
 // Close gallery with Escape key
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Escape') {
-    closeGallery();
+    if (document.getElementById('gallery-modal').style.display === 'block') {
+      closeGallery();
+    }
   }
 });
 </script>
